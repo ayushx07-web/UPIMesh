@@ -1,0 +1,7 @@
+{
+  "name": "upi-offline-mesh",
+  "scripts": {
+    "frontend": "cd frontend && npm run dev",
+    "install:frontend": "cd frontend && npm install"
+  }
+}
