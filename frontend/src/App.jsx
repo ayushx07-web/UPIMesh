@@ -23,6 +23,7 @@ function App() {
   const [receiverVpa, setReceiverVpa] = useState('bob@demo');
   const [amount, setAmount] = useState('500');
   const [pin, setPin] = useState('1234');
+  const isSameVpa = senderVpa === receiverVpa;
 
   // Loading states
   const [loading, setLoading] = useState({
@@ -494,10 +495,16 @@ function App() {
                 </div>
               </div>
 
+              {isSameVpa && (
+                <div style={{ color: 'var(--accent-red)', fontSize: '11px', marginTop: '6px', marginBottom: '6px', fontWeight: '500' }}>
+                  ⚠️ Sender and Receiver VPA must be different.
+                </div>
+              )}
+
               <button 
                 type="submit" 
                 className="btn-primary" 
-                disabled={loading.inject}
+                disabled={loading.inject || isSameVpa}
                 style={{ marginTop: '8px' }}
               >
                 {loading.inject ? (
