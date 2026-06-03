@@ -352,6 +352,12 @@ function App() {
             <span className="pulse-dot" />
             Live Mesh
           </span>
+          <span className="live-indicator" style={{ background: 'rgba(59, 130, 246, 0.1)', color: 'var(--accent-blue)', borderColor: 'rgba(59, 130, 246, 0.2)' }}>
+            {meshState.devices.filter(d => d.hasInternet).length} Bridge(s)
+          </span>
+          <span className="live-indicator" style={{ background: 'rgba(249, 115, 22, 0.1)', color: 'var(--accent-orange)', borderColor: 'rgba(249, 115, 22, 0.2)' }}>
+            {meshState.devices.reduce((acc, d) => acc + d.packetCount, 0)} Pkts in Transit
+          </span>
         </div>
         <div className="header-time">{currentTime}</div>
       </header>
