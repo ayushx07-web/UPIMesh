@@ -50,11 +50,15 @@ function App() {
   };
 
   // Toast handler
+  const removeToast = (id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  };
+
   const addToast = (message, type = 'success') => {
     const id = Math.random().toString(36).substring(2, 9);
     setToasts((prev) => [...prev, { id, message, type }]);
     setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
+      removeToast(id);
     }, 4000);
   };
 
@@ -326,14 +330,14 @@ function App() {
 
   return (
     <>
-      {/* Toast Notifications */}
       <div className="toast-container">
         {toasts.map((t) => (
           <div key={t.id} className={`toast toast-${t.type}`}>
             <span className="toast-icon">
               {t.type === 'success' ? '✓' : t.type === 'error' ? '✗' : 'ℹ'}
             </span>
-            <span className="toast-message">{t.message}</span>
+            <span className="toast-message" style={{ flexGrow: 1 }}>{t.message}</span>
+            <button className="toast-close-btn" onClick={() => removeToast(t.id)}>×</button>
           </div>
         ))}
       </div>
