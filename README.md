@@ -9,6 +9,13 @@ A Spring Boot backend that demonstrates **offline UPI payments routed through a 
 
 This repo is the **server side** of that system, plus a software simulator of the mesh so you can demo the whole flow on a single laptop without any real Bluetooth hardware.
 
+## 🔗 Live Demo
+- **Frontend App**: [LIVE_FRONTEND_URL]([LIVE_FRONTEND_URL])
+- **Backend API & Demo Dashboard**: [LIVE_BACKEND_URL]([LIVE_BACKEND_URL])
+
+> [!NOTE]
+> **Database Reset on Free Tier Hosting**: The database is in-memory by design (H2, `ddl-auto=create-drop`). On a free hosting tier (such as Render) where the service spins down after inactivity, a cold start of the service resets all demo data to the initial seeded accounts (Alice, Bob, and the bridge devices). This is expected behavior and not a bug.
+
 ## Screenshots
 > Run the app and visit http://localhost:5173 for the React dashboard.
 > The original Thymeleaf dashboard is still available at http://localhost:8080.
@@ -45,11 +52,11 @@ You'll see all three in the dashboard.
 ## How to run it
 
 ### Backend (Spring Boot)
-In the project root:
+From the repository root, run:
   # Windows
-  mvnw.cmd spring-boot:run
+  cd backend && .\mvnw.cmd spring-boot:run
   # Mac/Linux
-  ./mvnw spring-boot:run
+  cd backend && ./mvnw spring-boot:run
 
 ### Frontend (React)
 In a second terminal:
@@ -116,7 +123,7 @@ To really see idempotency in action, modify `MeshSimulatorService.java` to seed 
 
 To exercise the *concurrent duplicate* case properly, run the test:
 ```cmd
-mvnw.cmd test -Dtest=IdempotencyConcurrencyTest#singlePacketDeliveredByThreeBridgesSettlesExactlyOnce
+cd backend && .\mvnw.cmd test -Dtest=IdempotencyConcurrencyTest#singlePacketDeliveredByThreeBridgesSettlesExactlyOnce
 ```
 
 This test creates one packet, fires 3 threads at `BridgeIngestionService.ingest()` simultaneously, and verifies that exactly one settles, two are dropped as duplicates, and the sender is debited exactly once.
@@ -231,45 +238,46 @@ See `BridgeIngestionService.java` for the freshness check.
 
 ```
 upi-offline-mesh/
-├── pom.xml                                  Maven build, Spring Boot 3.3, Java 17
-├── mvnw, mvnw.cmd                           Maven wrapper (no install needed)
-├── README.md                                this file
-└── src/main/
-    ├── resources/
-    │   ├── application.properties           H2 in-memory DB, port 8080, TTLs
-    │   └── templates/dashboard.html         The interactive demo UI
-    └── java/com/demo/upimesh/
-        ├── UpiMeshApplication.java          Spring Boot main class
-        │
-        ├── model/                           ── Domain layer
-        │   ├── Account.java                 JPA entity. @Version = optimistic lock
-        │   ├── AccountRepository.java       Spring Data JPA
-        │   ├── Transaction.java             Settled-tx ledger. unique idx on packetHash
-        │   ├── TransactionRepository.java   Spring Data JPA
-        │   ├── MeshPacket.java              Wire format. Outer fields readable, ciphertext opaque
-        │   └── PaymentInstruction.java      Decrypted payload (sender/receiver/amount/nonce/time)
-        │
-        ├── crypto/                          ── Cryptography layer
-        │   ├── ServerKeyHolder.java         Generates RSA-2048 keypair on startup
-        │   └── HybridCryptoService.java     RSA-OAEP + AES-256-GCM encrypt/decrypt + ciphertext hash
-        │
-        ├── service/                         ── Business logic
-        │   ├── DemoService.java             Seeds accounts, simulates a sender phone
-        │   ├── VirtualDevice.java           One simulated phone in the mesh
-        │   ├── MeshSimulatorService.java    Gossip protocol across virtual devices
-        │   ├── IdempotencyService.java      ConcurrentHashMap = JVM-local Redis SETNX
-        │   ├── SettlementService.java       @Transactional debit + credit + ledger insert
-        │   └── BridgeIngestionService.java  THE pipeline: hash → claim → decrypt → freshness → settle
-        │
-        ├── controller/                      ── HTTP layer
-        │   ├── ApiController.java           All REST endpoints
-        │   └── DashboardController.java     Serves the dashboard HTML at /
-        │
-        └── config/
-            └── AppConfig.java               @EnableScheduling for cache eviction
-
-src/test/java/com/demo/upimesh/
-└── IdempotencyConcurrencyTest.java          The 3-bridges-at-once test + tamper test
+├── backend/
+│   ├── pom.xml                              Maven build, Spring Boot 3.3, Java 17
+│   ├── mvnw, mvnw.cmd                       Maven wrapper (no install needed)
+│   ├── Dockerfile                           Multi-stage Dockerfile for deployment
+│   └── src/main/
+│       ├── resources/
+│       │   ├── application.properties       H2 in-memory DB, port 8080 (supports PORT env var), TTLs
+│       │   └── templates/dashboard.html     The interactive demo UI
+│       └── java/com/demo/upimesh/
+│           ├── UpiMeshApplication.java      Spring Boot main class
+│           │
+│           ├── model/                       ── Domain layer
+│           │   ├── Account.java             JPA entity. @Version = optimistic lock
+│           │   ├── AccountRepository.java   Spring Data JPA
+│           │   ├── Transaction.java         Settled-tx ledger. unique idx on packetHash
+│           │   ├── TransactionRepository.java Spring Data JPA
+│           │   ├── MeshPacket.java          Wire format. Outer fields readable, ciphertext opaque
+│           │   └── PaymentInstruction.java  Decrypted payload (sender/receiver/amount/nonce/time)
+│           │
+│           ├── crypto/                      ── Cryptography layer
+│           │   ├── ServerKeyHolder.java     Generates RSA-2048 keypair on startup
+│           │   └── HybridCryptoService.java RSA-OAEP + AES-256-GCM encrypt/decrypt + ciphertext hash
+│           │
+│           ├── service/                     ── Business logic
+│           │   ├── DemoService.java         Seeds accounts, simulates a sender phone
+│           │   ├── VirtualDevice.java       One simulated phone in the mesh
+│           │   ├── MeshSimulatorService.java Gossip protocol across virtual devices
+│           │   ├── IdempotencyService.java  ConcurrentHashMap = JVM-local Redis SETNX
+│           │   ├── SettlementService.java   @Transactional debit + credit + ledger insert
+│           │   └── BridgeIngestionService.java THE pipeline: hash → claim → decrypt → freshness → settle
+│           │
+│           ├── controller/                  ── HTTP layer
+│           │   ├── ApiController.java       All REST endpoints
+│           │   └── DashboardController.java Serves the dashboard HTML at /
+│           │
+│           └── config/
+│               └── AppConfig.java           @EnableScheduling for cache eviction
+│
+└── src/test/java/com/demo/upimesh/
+    └── IdempotencyConcurrencyTest.java      The 3-bridges-at-once test + tamper test
 ```
 
 ---
@@ -323,8 +331,8 @@ Response:
 ## Tests
 
 Run all tests:
-```
-mvnw.cmd test
+```cmd
+cd backend && .\mvnw.cmd test
 ```
 
 The three included tests:
