@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 
+const API_BASE = import.meta.env.VITE_API_URL || '';
+
 function App() {
   // Accounts, mesh states, transactions
   const [accounts, setAccounts] = useState([]);
@@ -67,14 +69,14 @@ function App() {
   const fetchState = async () => {
     try {
       // Mesh State
-      const meshRes = await fetch('/api/mesh/state');
+      const meshRes = await fetch(`${API_BASE}/api/mesh/state`);
       if (meshRes.ok) {
         const meshData = await meshRes.json();
         setMeshState(meshData);
       }
 
       // Accounts (and calculate balance flashes)
-      const accountsRes = await fetch('/api/accounts');
+      const accountsRes = await fetch(`${API_BASE}/api/accounts`);
       if (accountsRes.ok) {
         const accountsData = await accountsRes.json();
         setAccounts(accountsData);
@@ -112,7 +114,7 @@ function App() {
       }
 
       // Transactions (and calculate new row entry animations)
-      const txsRes = await fetch('/api/transactions');
+      const txsRes = await fetch(`${API_BASE}/api/transactions`);
       if (txsRes.ok) {
         const txsData = await txsRes.json();
         setTransactions(txsData);
@@ -167,7 +169,7 @@ function App() {
 
     setLoading((prev) => ({ ...prev, inject: true }));
     try {
-      const response = await fetch('/api/demo/send', {
+      const response = await fetch(`${API_BASE}/api/demo/send`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -214,7 +216,7 @@ function App() {
   const handleGossip = async () => {
     setLoading((prev) => ({ ...prev, gossip: true }));
     try {
-      const response = await fetch('/api/mesh/gossip', { method: 'POST' });
+      const response = await fetch(`${API_BASE}/api/mesh/gossip`, { method: 'POST' });
       if (!response.ok) {
         throw new Error('Failed to run gossip round');
       }
@@ -254,7 +256,7 @@ function App() {
       // Transition Stepper to Step 3 (Bridge Upload)
       setActiveStep(3);
 
-      const response = await fetch('/api/mesh/flush', { method: 'POST' });
+      const response = await fetch(`${API_BASE}/api/mesh/flush`, { method: 'POST' });
       if (!response.ok) {
         throw new Error('Failed to trigger bridge upload');
       }
@@ -307,7 +309,7 @@ function App() {
   const handleReset = async () => {
     setLoading((prev) => ({ ...prev, reset: true }));
     try {
-      const response = await fetch('/api/mesh/reset', { method: 'POST' });
+      const response = await fetch(`${API_BASE}/api/mesh/reset`, { method: 'POST' });
       if (!response.ok) {
         throw new Error('Failed to reset mesh network');
       }

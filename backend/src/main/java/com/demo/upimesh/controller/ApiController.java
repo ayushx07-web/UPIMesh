@@ -19,6 +19,7 @@ import java.util.*;
  *   /api/bridge/ingest   → THE real production endpoint a real bridge node would hit
  *   /api/accounts, /api/transactions → for the dashboard
  */
+@CrossOrigin
 @RestController
 @RequestMapping("/api")
 public class ApiController {
