@@ -18,6 +18,9 @@ This repo is the **server side** of that system, plus a software simulator of th
 ## Screenshots
 > Run the app and visit http://localhost:8080 for the demo dashboard.
 
+![Thymeleaf Demo Dashboard Part 1](screenshots/dashboard_1.png)
+![Thymeleaf Demo Dashboard Part 2](screenshots/dashboard_2.png)
+
 ---
 
 ## Table of Contents
