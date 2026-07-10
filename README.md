@@ -16,7 +16,7 @@ This repo is the **server side** of that system, plus a software simulator of th
 > **Database Reset on Free Tier Hosting**: The database is in-memory by design (H2, `ddl-auto=create-drop`). On a free hosting tier (such as Render) where the service spins down after inactivity, a cold start of the service resets all demo data to the initial seeded accounts (Alice, Bob, and the bridge devices). This is expected behavior and not a bug.
 
 ## Screenshots
-> Run the app and visit http://localhost:8080 for the demo dashboard.
+
 
 ![Thymeleaf Demo Dashboard Part 1](screenshots/dashboard_1.png)
 ![Thymeleaf Demo Dashboard Part 2](screenshots/dashboard_2.png)
