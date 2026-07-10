@@ -1,6 +1,5 @@
 ![Java](https://img.shields.io/badge/Java-17-orange)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3-brightgreen)
-![React](https://img.shields.io/badge/Frontend-React%2018-61dafb)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
 
@@ -11,15 +10,13 @@ A Spring Boot backend that demonstrates **offline UPI payments routed through a 
 This repo is the **server side** of that system, plus a software simulator of the mesh so you can demo the whole flow on a single laptop without any real Bluetooth hardware.
 
 ## 🔗 Live Demo
-- **Frontend App**: [LIVE_FRONTEND_URL]([LIVE_FRONTEND_URL])
-- **Backend API & Demo Dashboard**: [LIVE_BACKEND_URL]([LIVE_BACKEND_URL])
+- **Demo Dashboard**: [https://upimesh.onrender.com/](https://upimesh.onrender.com/)
 
 > [!NOTE]
 > **Database Reset on Free Tier Hosting**: The database is in-memory by design (H2, `ddl-auto=create-drop`). On a free hosting tier (such as Render) where the service spins down after inactivity, a cold start of the service resets all demo data to the initial seeded accounts (Alice, Bob, and the bridge devices). This is expected behavior and not a bug.
 
 ## Screenshots
-> Run the app and visit http://localhost:5173 for the React dashboard.
-> The original Thymeleaf dashboard is still available at http://localhost:8080.
+> Run the app and visit http://localhost:8080 for the demo dashboard.
 
 ---
 
@@ -52,21 +49,13 @@ You'll see all three in the dashboard.
 
 ## How to run it
 
-### Backend (Spring Boot)
 From the repository root, run:
   # Windows
   cd backend && .\mvnw.cmd spring-boot:run
   # Mac/Linux
   cd backend && ./mvnw spring-boot:run
 
-### Frontend (React)
-In a second terminal:
-  cd frontend
-  npm install
-  npm run dev
-
-Open http://localhost:5173 for the full React dashboard.
-Open http://localhost:8080 for the original dashboard.
+Open http://localhost:8080 for the demo dashboard.
 
 ---
 

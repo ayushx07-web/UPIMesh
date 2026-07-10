@@ -1,29 +1,25 @@
-# Stage 1: Build the React frontend
-FROM node:18-alpine AS frontend-build
-WORKDIR /frontend
-COPY frontend/package*.json ./
-RUN npm install
-COPY frontend/ ./
-RUN npm run build
+# Build stage: Cache dependencies first, then package the application
+FROM maven:3.9-eclipse-temurin-17 AS build
+WORKDIR /app
 
-# Stage 2: Build the Spring Boot backend
-FROM maven:3.9-eclipse-temurin-17 AS backend-build
-WORKDIR /backend
-COPY backend/pom.xml ./
+# Copy pom.xml to download dependencies offline
+COPY backend/pom.xml .
+
+# Download dependencies (cached layer)
 RUN mvn dependency:go-offline -B
+
+# Copy src and build the package
 COPY backend/src ./src
-
-# Copy the built frontend static assets into Spring Boot's static resources directory
-COPY --from=frontend-build /frontend/dist/ ./src/main/resources/static/
-
 RUN mvn clean package -DskipTests
 
-# Stage 3: Run the application
+# Run stage: Use a lightweight JRE image for final execution
 FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
-COPY --from=backend-build /backend/target/upi-offline-mesh-0.0.1-SNAPSHOT.jar app.jar
 
-# Port is exposed dynamically based on environment configuration, defaulting to 8080
+# Copy the built jar as app.jar
+COPY --from=build /app/target/upi-offline-mesh-0.0.1-SNAPSHOT.jar app.jar
+
+# Expose port 8080
 EXPOSE 8080
 
 # Execute the application
